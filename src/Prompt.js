@@ -56,6 +56,14 @@ export default class Prompt extends Component {
     visible: false,
   };
 
+  componentWillMount() {
+    this._onChangeText = this._onChangeText.bind(this);
+    this._onSubmitPress = this._onSubmitPress.bind(this);
+    this._onCancelPress = this._onCancelPress.bind(this);
+    this.close = this.close.bind(this);
+    this.onShow = this.onShow.bind(this);
+  }
+
   componentDidMount() {
     this.setState({value: this.props.defaultValue});
   }
@@ -65,29 +73,29 @@ export default class Prompt extends Component {
     this.setState({ visible });
   }
 
-  _onChangeText = (value) => {
+  _onChangeText(value) {
     this.setState({ value });
     this.props.onChangeText(value);
   };
 
-  _onSubmitPress = () => {
+  _onSubmitPress() {
     const { value } = this.state;
     this.props.onSubmit(value);
   };
 
-  _onCancelPress = () => {
+  _onCancelPress() {
     this.props.onCancel();
   };
 
-  close = () => {
+  close() {
     this.setState({visible: false});
   };
 
-  onShow = () => {
+  onShow() {
     this.refs.textInput.focus();
   };
 
-  _renderDialog = () => {
+  _renderDialog() {
     const {
       title,
       placeholder,
@@ -103,8 +111,10 @@ export default class Prompt extends Component {
       submitButtonTextStyle,
       cancelButtonStyle,
       cancelButtonTextStyle,
-      inputStyle
+      inputStyle,
+      textInputProps,
     } = this.props;
+
     return (
       <View style={styles.dialog} key="prompt">
         <View style={styles.dialogOverlay}/>
@@ -123,7 +133,7 @@ export default class Prompt extends Component {
               //autoFocus={true}
               ref='textInput'
               underlineColorAndroid="white"
-              {...this.props.textInputProps} />
+              {...textInputProps} />
           </View>
           <View style={[styles.dialogFooter, { borderColor }]}>
             <TouchableWithoutFeedback onPress={this._onCancelPress}>
@@ -148,7 +158,12 @@ export default class Prompt extends Component {
 
   render() {
     return (
-      <Modal onRequestClose={() => this.close()} transparent={true} visible={this.props.visible} onShow={this.onShow}>
+      <Modal
+        onRequestClose={this.close}
+        transparent
+        visible={this.props.visible}
+        onShow={this.onShow}
+      >
         {this._renderDialog()}
       </Modal>
     );
